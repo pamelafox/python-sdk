@@ -155,6 +155,9 @@ class GraphAPI(object):
         """Deletes the object with the given ID from the graph."""
         self.request(id, post_args={"method": "delete"})
 
+    def revoke_auth(self, id):
+        self.request(id + '/permissions', post_args={"method": "delete"})
+
     def request(self, path, args=None, post_args=None):
         """Fetches the given path in the Graph API.
 
@@ -174,7 +177,7 @@ class GraphAPI(object):
             response = _parse_json(file.read())
         finally:
             file.close()
-        if response.get("error"):
+        if isinstance(response, dict) and response.get("error"):
             raise GraphAPIError(response["error"]["type"],
                                 response["error"]["message"])
         return response
